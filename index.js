@@ -22,39 +22,35 @@ bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
 
-  // if (text === '/start') {
-  //     await bot.sendMessage(chatId, "Fill the form below", {
-  //         reply_markup: {
-  //             keyboard: [
-  //                 [{ text: 'Fill the from', web_app: { url: webAppUrl + '/form' } }]
-  //             ]
-  //         }
-  //     })
+  if (text === "/start") {
+    await bot.sendMessage(chatId, "I am an AI bot, created to help you with everything you need!");
+    await bot.sendMessage(chatId, "Ask me what you want.");
+    await bot.sendMessage(chatId, "And I will try to help you!");
 
-  //     await bot.sendMessage(chatId, "Enter our shop by pressing the button below!", {
-  //         reply_markup: {
-  //             inline_keyboard: [
-  //                 [{ text: 'Make an order', web_app: { url: webAppUrl } }]
-  //             ]
-  //         }
-  //     })
-  // }
-  try {
+    //   await bot.sendMessage(chatId, "Enter our shop by pressing the button below!", {
+    //       reply_markup: {
+    //           inline_keyboard: [
+    //               [{ text: 'Make an order', web_app: { url: webAppUrl } }]
+    //           ]
+    //       }
+    //   })
+  } else {
+    try {
+      const response = await openai.createCompletion({
+        model: "text-davinci-003",
+        prompt: `${text}`,
+        temperature: 0,
+        max_tokens: 3000,
+        top_p: 1,
+        frequency_penalty: 0.5,
+        presence_penalty: 0,
+      });
+      bot.sendMessage(chatId, response.data.choices[0].text);
+    } catch (err) {
+      console.log(err);
 
-    const response = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: `${text}`,
-      temperature: 0,
-      max_tokens: 3000,
-      top_p: 1,
-      frequency_penalty: 0.5,
-      presence_penalty: 0,
-    });
-    bot.sendMessage(chatId, response.data.choices[0].text);
-  } catch (err) {
-    console.log(err);
-
-    bot.sendMessage(chatId, err);
+      bot.sendMessage(chatId, err);
+    }
   }
 });
 
